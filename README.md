@@ -1,2 +1,0 @@
-# MySpring
-framework like spring
