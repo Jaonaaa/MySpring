@@ -1,8 +1,9 @@
-package src;
+package etu1915.framework.servlet;
 
 import java.io.*;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import utilities.Url;
 
 public class FrontServlet extends HttpServlet {
 
@@ -27,15 +28,9 @@ public class FrontServlet extends HttpServlet {
     }
 
     public String processRequest(HttpServletResponse res, HttpServletRequest req) throws Exception {
-        StringBuffer url = req.getRequestURL();
-        String context = req.getContextPath();
-        int index = url.indexOf(req.getContextPath());
-        String otherArgs = "";
-        // +1 for not taking the "/"
-        for (int i = index + (context.length()) + 1; i < url.length(); i++) {
-            otherArgs += url.toString().charAt(i);
-        }
-        return otherArgs;
+
+        String urlSetted = Url.getUrlSetted(res, req);
+        return urlSetted;
     }
 
 }

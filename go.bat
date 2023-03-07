@@ -1,1 +1,2 @@
-javac -cp servlet-api.jar src/*.java
+javac utilities/*.java
+javac etu1915/framework/servlet/*.java
