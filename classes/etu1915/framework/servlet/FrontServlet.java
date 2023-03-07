@@ -1,11 +1,16 @@
 package etu1915.framework.servlet;
 
 import java.io.*;
+import java.util.HashMap;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import utilities.Url;
+import etu1915.framework.Mapping;;
 
 public class FrontServlet extends HttpServlet {
+
+    HashMap<String, Mapping> mappingUrls;
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
