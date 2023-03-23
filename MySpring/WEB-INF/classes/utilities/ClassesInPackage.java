@@ -3,6 +3,7 @@ package utilities;
 import java.io.*;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
+import java.util.Set;
 // import java.lang.reflect.InvocationTargetException;
 // import java.lang.reflect.Method;
 import java.util.Vector;
@@ -10,12 +11,16 @@ import java.util.stream.Collectors;
 
 public class ClassesInPackage {
 
-    public Vector<Class<?>> getAllClassIn(String packageName) {
+    public Vector<Class<?>> getAllClassIn(String pathBeforeTo, String packageName) throws Exception {
         //
         String pkName = packageName.replace("/", ".");
         InputStream stream = ClassLoader.getSystemClassLoader()
-                .getResourceAsStream(pkName.replaceAll("[.]", "/"));
+                .getResourceAsStream(pathBeforeTo + "/" + pkName.replaceAll("[.]", "/"));
+        if (pathBeforeTo instanceof String) {
+            throw new Exception(pathBeforeTo + "/" + pkName.replaceAll("[.]", "/"));
+        }
         BufferedReader reader = new BufferedReader(new InputStreamReader(stream));
+
         Vector<Class<?>> classes = new Vector<Class<?>>();
         // get the classes
         reader.lines()
@@ -23,11 +28,34 @@ public class ClassesInPackage {
                 .map(line -> getMyClass(line, pkName))
                 .collect(Collectors.toSet()).forEach(el -> classes.add(el));
         //
+
         return classes;
+    }
+
+    //
+
+    public Vector<Class<?>> getClassesDirect(Vector<String> pathTo) {
+        Vector<Class<?>> clas = new Vector<Class<?>>();
+        for (String path : pathTo) {
+            clas.add(getMyClassDirect(path));
+        }
+        return clas;
+    }
+
+    private Class<?> getMyClassDirect(String className) {
+        try {
+            return Class.forName(className);
+        } catch (ClassNotFoundException e) {
+            // handle the exception
+            // System.err.println(e);
+        }
+        return null;
     }
 
     private Class<?> getMyClass(String className, String packageName) {
         try {
+            System.out.println(packageName + "."
+                    + className.substring(0, className.lastIndexOf('.')));
             return Class.forName(packageName + "."
                     + className.substring(0, className.lastIndexOf('.')));
         } catch (ClassNotFoundException e) {
@@ -37,8 +65,9 @@ public class ClassesInPackage {
         return null;
     }
 
-    public Vector<Class<?>> getAnnotedClass(Class<? extends Annotation> annotation, String packageName) {
-        Vector<Class<?>> classes = this.getAllClassIn(packageName);
+    public Vector<Class<?>> getAnnotedClass(Class<? extends Annotation> annotation, String packageName)
+            throws Exception {
+        Vector<Class<?>> classes = this.getAllClassIn(packageName, "");
         Vector<Class<?>> targetClass = new Vector<Class<?>>();
         for (Class<?> cla : classes) {
             if (cla.isAnnotationPresent(annotation)) {
