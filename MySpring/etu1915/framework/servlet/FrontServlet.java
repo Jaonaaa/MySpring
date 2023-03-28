@@ -1,7 +1,7 @@
 package etu1915.framework.servlet;
 
 import java.io.*;
-
+import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
 
@@ -14,9 +14,6 @@ import etu1915.framework.Mapping;
 public class FrontServlet extends HttpServlet {
 
     HashMap<String, Mapping> mappingUrls;
-    String p;
-    File[] ps;
-    Set<String> ds;
 
     public void init() throws ServletException {
         super.init();
@@ -27,10 +24,22 @@ public class FrontServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
-            processRequest(res, req);
+            String clientKey = processRequest(res, req);
             for (String key : mappingUrls.keySet()) {
-                out.println(key + " => " + mappingUrls.get(key).getClassName());
+                out.println(key + " => " + mappingUrls.get(key).getClassName() + "  -- "
+                        + mappingUrls.get(key).getMethod());
             }
+            Mapping mapping = mappingUrls.get(clientKey);
+            String content = "";
+            if (mapping != null) {
+                content = mapping.getClassName();
+                Class<?> classMapping = Class.forName(mapping.getClassName());
+                Method methodMapping = classMapping.getMethod(mapping.getMethod());
+                Object switchClass = classMapping.getConstructor().newInstance();
+                content = (String) methodMapping.invoke(switchClass);
+            }
+            RequestDispatcher dispat = req.getRequestDispatcher("/index.jsp?content=" + content);
+            dispat.forward(req, res);
 
         } catch (Exception e) {
             out.println("Exception: " + e.getMessage());
@@ -60,7 +69,6 @@ public class FrontServlet extends HttpServlet {
             String classesPath = this.getServletContext().getRealPath(pathToClasses);
             map = new Url().getGuide(classesPath);
         } catch (Exception e) {
-            // TODO: handle exception
         }
         return map;
     }
