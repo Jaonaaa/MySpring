@@ -1,10 +1,12 @@
 package utilities;
 
 import java.io.File;
-import java.lang.reflect.Method;
+import java.text.Annotation;
 import java.util.HashMap;
 import java.util.Vector;
 
+import Annotation.Choosen;
+import Annotation.Method;
 import etu1915.framework.Mapping;
 import jakarta.servlet.http.*;
 
@@ -48,8 +50,8 @@ public class Url {
         Vector<Mapping> mappings = new Vector<Mapping>();
         Vector<Class<?>> classes = null;
         ////
-
         try {
+
             classes = this.getAllClasses(packageName + "\\", packageName, new Vector<Class<?>>());
         } catch (Exception e) {
             throw new Exception(e);
@@ -58,15 +60,17 @@ public class Url {
         //
         if (classes != null) {
             for (Class<?> class1 : classes) {
-                System.out.println(class1);
-
-                Method[] methods = class1.getDeclaredMethods();
-                for (int i = 0; i < methods.length; i++) {
-                    Mapping mapping = new Mapping();
-                    mapping.setClassName(class1.getSimpleName());
-                    mapping.setMethod(methods[i].getName());
-                    mapping.setFullName(class1.getCanonicalName());
-                    mappings.add(mapping);
+                if (class1.isAnnotationPresent(Choosen.class)) {
+                    // System.out.println(class1);
+                    java.lang.reflect.Method[] methods = class1.getDeclaredMethods();
+                    for (int i = 0; i < methods.length; i++) {
+                        if (methods[i].isAnnotationPresent(Method.class)) {
+                            Mapping mapping = new Mapping();
+                            mapping.setClassName(class1.getCanonicalName());
+                            mapping.setMethod(methods[i].getName());
+                            mappings.add(mapping);
+                        }
+                    }
                 }
             }
         }
@@ -76,7 +80,8 @@ public class Url {
         HashMap<String, Mapping> maps = new HashMap<String, Mapping>();
         //
         for (Mapping mapping : mappings) {
-            String key = mapping.getClassName() + "/" + mapping.getMethod();
+            String[] blocks = mapping.getClassName().split("[.]");
+            String key = blocks[blocks.length - 1] + "-" + mapping.getMethod();
             maps.put(key, mapping);
         }
         // for (String key : maps.keySet()) {
