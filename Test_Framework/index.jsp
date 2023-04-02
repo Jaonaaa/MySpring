@@ -7,5 +7,5 @@ if(request.getParameter("content")!=null)
     out.print("{ "+request.getParameter("content")+"}");
 
 }
-out.println("Hello world");
+out.println("Hello world , Index Page");
 %>
