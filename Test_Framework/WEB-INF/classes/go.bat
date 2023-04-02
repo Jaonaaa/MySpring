@@ -1,1 +1,1 @@
-javac -cp "spring.jar" view/*.java
+javac -cp "spring.jar" models/*.java

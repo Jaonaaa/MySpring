@@ -5,8 +5,11 @@ import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.Set;
 
+import javax.swing.text.Utilities;
+
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import utilities.ModelView;
 import utilities.Url;
 
 import etu1915.framework.Mapping;
@@ -25,20 +28,29 @@ public class FrontServlet extends HttpServlet {
         PrintWriter out = res.getWriter();
         try {
             String clientKey = processRequest(res, req);
+
             for (String key : mappingUrls.keySet()) {
                 out.println(key + " => " + mappingUrls.get(key).getClassName() + "  -- "
                         + mappingUrls.get(key).getMethod());
             }
+
             Mapping mapping = mappingUrls.get(clientKey);
-            String content = "";
+            String urlTo = "index.jsp";
             if (mapping != null) {
-                content = mapping.getClassName();
+                urlTo = mapping.getClassName();
                 Class<?> classMapping = Class.forName(mapping.getClassName());
                 Method methodMapping = classMapping.getMethod(mapping.getMethod());
-                Object switchClass = classMapping.getConstructor().newInstance();
-                content = (String) methodMapping.invoke(switchClass);
+                Class<?> returnType = methodMapping.getReturnType();
+                out.println(returnType);
+                if (returnType == Class.forName("utilities.ModelView")) {
+                    Object switchClass = classMapping.getConstructor().newInstance();
+                    ModelView view = (ModelView) methodMapping.invoke(switchClass);
+                    if (view.getUrl() != null) {
+                        urlTo = view.getUrl();
+                    }
+                }
             }
-            RequestDispatcher dispat = req.getRequestDispatcher("/index.jsp?content=" + content);
+            RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo);
             dispat.forward(req, res);
 
         } catch (Exception e) {
