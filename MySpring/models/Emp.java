@@ -2,6 +2,7 @@ package models;
 
 import Annotation.Choosen;
 import Annotation.Method;
+import utilities.ModelView;
 
 @Choosen
 public class Emp {
@@ -13,6 +14,12 @@ public class Emp {
 
     public void updateEmp() {
 
+    }
+
+    public ModelView empPage() {
+        ModelView view = new ModelView();
+        view.setUrl("Emp.jsp");
+        return view;
     }
 
     @Method

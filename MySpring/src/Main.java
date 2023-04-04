@@ -20,11 +20,11 @@ public class Main {
         // for (String key : maps.keySet()) {
         // System.out.println(key);
         // }
-        String df = "RE.dsds.DS";
-        String[] po = df.split("[.]");
-        System.out.println("Atoo");
-        for (int i = 0; i < po.length; i++) {
-            System.out.println(po[i]);
-        }
+        // String df = "RE.dsds.DS";
+        // String[] po = df.split("[.]");
+        // System.out.println("Atoo");
+        // for (int i = 0; i < po.length; i++) {
+        // System.out.println(po[i]);
+        // }
     }
 }
