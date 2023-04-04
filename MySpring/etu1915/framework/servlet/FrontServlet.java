@@ -27,29 +27,13 @@ public class FrontServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
-            String clientKey = processRequest(res, req);
-
-            for (String key : mappingUrls.keySet()) {
-                out.println(key + " => " + mappingUrls.get(key).getClassName() + "  -- "
-                        + mappingUrls.get(key).getMethod());
-            }
-
-            Mapping mapping = mappingUrls.get(clientKey);
             String urlTo = "index.jsp";
-            if (mapping != null) {
-                urlTo = mapping.getClassName();
-                Class<?> classMapping = Class.forName(mapping.getClassName());
-                Method methodMapping = classMapping.getMethod(mapping.getMethod());
-                Class<?> returnType = methodMapping.getReturnType();
-                out.println(returnType);
-                if (returnType == Class.forName("utilities.ModelView")) {
-                    Object switchClass = classMapping.getConstructor().newInstance();
-                    ModelView view = (ModelView) methodMapping.invoke(switchClass);
-                    if (view.getUrl() != null) {
-                        urlTo = view.getUrl();
-                    }
-                }
+
+            String urlPage = processRequest(res, req);
+            if (!urlPage.equals("")) {
+                urlTo = urlPage;
             }
+
             RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo);
             dispat.forward(req, res);
 
@@ -69,10 +53,32 @@ public class FrontServlet extends HttpServlet {
     }
 
     public String processRequest(HttpServletResponse res, HttpServletRequest req) throws Exception {
-
         String urlSetted = Url.getUrlSetted(res, req);
+        String urlView = "";
+        Mapping mapping = mappingUrls.get(urlSetted);
+        if (mapping != null) {
+            urlSetted = mapping.getClassName();
+            Class<?> classMapping = Class.forName(mapping.getClassName());
+            Method methodMapping = classMapping.getMethod(mapping.getMethod());
+            Class<?> returnType = methodMapping.getReturnType();
 
-        return urlSetted;
+            if (returnType == Class.forName("utilities.ModelView")) {
+                Object switchClass = classMapping.getConstructor().newInstance();
+                ModelView view = (ModelView) methodMapping.invoke(switchClass);
+                if (view.getUrl() != null) {
+                    urlView = view.getUrl();
+                }
+                addDataToRequest(req, view);
+            }
+        }
+        return urlView;
+    }
+
+    public void addDataToRequest(HttpServletRequest req, ModelView modelView) {
+        HashMap<String, Object> datas = modelView.getDatas();
+        for (String key : datas.keySet()) {
+            req.setAttribute(key, datas.get(key));
+        }
     }
 
     public HashMap<String, Mapping> getMap(String pathToClasses) {

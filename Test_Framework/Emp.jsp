@@ -1,3 +1,9 @@
+<%@ page language="java" contentType="text/html"
+ import="java.util.*"
+pageEncoding="UTF-8" %>
+
+
+
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -8,5 +14,12 @@
   </head>
   <body>
     Hello , Emp Page :))
+    <%
+      Vector<String> list = (Vector<String>) request.getAttribute("hellos");
+      for (int i = 0; i < list.size(); i++)
+      {
+        out.print(list.get(i)+"</br>");
+      }
+    %>
   </body>
 </html>
