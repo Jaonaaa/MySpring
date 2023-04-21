@@ -58,35 +58,27 @@ public class Url {
         }
         //
         //
+        HashMap<String, Mapping> maps = new HashMap<String, Mapping>();
         if (classes != null) {
             for (Class<?> class1 : classes) {
                 if (class1.isAnnotationPresent(Choosen.class)) {
-                    // System.out.println(class1);
+                    //
                     java.lang.reflect.Method[] methods = class1.getDeclaredMethods();
                     for (int i = 0; i < methods.length; i++) {
                         if (methods[i].isAnnotationPresent(Method.class)) {
+                            Method meth = methods[i].getAnnotation(Method.class);
+                            //
                             Mapping mapping = new Mapping();
                             mapping.setClassName(class1.getCanonicalName());
                             mapping.setMethod(methods[i].getName());
                             mappings.add(mapping);
+                            maps.put(meth.urlTo(), mapping);
                         }
                     }
                 }
             }
         }
 
-        //
-        //
-        HashMap<String, Mapping> maps = new HashMap<String, Mapping>();
-        //
-        for (Mapping mapping : mappings) {
-            String[] blocks = mapping.getClassName().split("[.]");
-            String key = blocks[blocks.length - 1] + "-" + mapping.getMethod();
-            maps.put(key, mapping);
-        }
-        // for (String key : maps.keySet()) {
-        // System.out.println(key + " => " + maps.get(key).getClassName());
-        // }
         return maps;
     }
 

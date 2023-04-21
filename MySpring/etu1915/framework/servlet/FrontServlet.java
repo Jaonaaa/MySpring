@@ -1,11 +1,12 @@
 package etu1915.framework.servlet;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.Set;
 
-import javax.swing.text.Utilities;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -34,27 +35,52 @@ public class FrontServlet extends HttpServlet {
                 urlTo = urlPage;
             }
 
-            RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo);
-            dispat.forward(req, res);
+            if (!urlPage.equals("")) {
+                RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" + urlPage);
+                dispat.forward(req, res);
+            } else {
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                Object target = save(res, req);
+                out.println(gson.toJson(target));
+
+            }
 
         } catch (Exception e) {
-            out.println("Exception: " + e.getMessage());
+            out.println(" Exception : " + e.getMessage());
         }
     }
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
-            String clientString = processRequest(res, req);
-            out.println(clientString);
+            String urlTo = "index.jsp";
+
+            String urlPage = processRequest(res, req);
+            if (!urlPage.equals("")) {
+                urlTo = urlPage;
+            }
+
+            if (!urlPage.equals("")) {
+                RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" + urlPage);
+                dispat.forward(req, res);
+            } else {
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                Object target = save(res, req);
+                out.println(gson.toJson(target));
+
+            }
+
         } catch (Exception e) {
-            out.println("Exception: " + e.getMessage());
+            out.println(" Exception : " + e.getMessage());
         }
     }
 
     public String processRequest(HttpServletResponse res, HttpServletRequest req) throws Exception {
         String urlSetted = Url.getUrlSetted(res, req);
         String urlView = "";
+        // verify if the url setted is in the hashmap
         Mapping mapping = mappingUrls.get(urlSetted);
         if (mapping != null) {
             urlSetted = mapping.getClassName();
@@ -72,6 +98,50 @@ public class FrontServlet extends HttpServlet {
             }
         }
         return urlView;
+    }
+
+    public Object save(HttpServletResponse res, HttpServletRequest req) throws Exception {
+        PrintWriter out = res.getWriter();
+
+        // get the object target
+        String urlSetted = Url.getUrlSetted(res, req);
+        // verify if the url setted is in the hashmap
+        Mapping mapping = mappingUrls.get(urlSetted);
+        Class<?> classMapping = Class.forName(mapping.getClassName());
+        Object repere = classMapping.getConstructor().newInstance();
+
+        //
+        Field[] fields = repere.getClass().getDeclaredFields();
+        // Get all field a try to match the filed and the parameter from the client
+        for (int i = 0; i < fields.length; i++) {
+            fields[i].setAccessible(true);
+            // if(fields[i].getType().getName().equals(fields))
+            validAffectationField(repere, fields[i], null);
+            String fieldName = fields[i].getName();
+            // verify if the parameter filed is matching then continue or not
+            String valueParameter = req.getParameter(fieldName);
+            if (valueParameter == null) {
+                continue;
+            }
+            validAffectationField(repere, fields[i], valueParameter);
+        }
+        return repere;
+    }
+
+    public void validAffectationField(Object obj, Field field, String value) throws Exception {
+        String fieldType = field.getType().getSimpleName();
+        if (fieldType.equals("int") || fieldType.equals("Integer")) {
+            field.set(obj, value == null ? 0 : Integer.valueOf(value));
+        } else if (fieldType.equals("Double")
+                || fieldType.equals("double")) {
+            field.set(obj, value == null ? 0.0 : Double.valueOf(value));
+        } else if (fieldType.equals("boolean")
+                || fieldType.equals("Boolean")) {
+            field.set(obj, value == null ? false : Boolean.valueOf(value));
+        } else {
+            field.set(obj, value == null ? null : value);
+        }
+
     }
 
     public void addDataToRequest(HttpServletRequest req, ModelView modelView) {

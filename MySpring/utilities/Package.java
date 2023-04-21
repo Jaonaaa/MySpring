@@ -1,7 +1,5 @@
 package utilities;
 
-import java.io.Console;
-import java.io.File;
 import java.util.Vector;
 
 public class Package {

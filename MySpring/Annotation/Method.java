@@ -9,6 +9,6 @@ import java.lang.annotation.Target;
 @Target(ElementType.METHOD)
 public @interface Method {
 
-    String name() default "Column";
+    String urlTo() default "";
 
 }

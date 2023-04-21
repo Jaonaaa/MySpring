@@ -1,14 +1,6 @@
 package src;
 
-import java.io.File;
-import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.util.HashMap;
-import java.util.Vector;
-import etu1915.framework.Mapping;
-import utilities.ClassesInPackage;
-import utilities.Package;
-import utilities.Url;
+import java.lang.reflect.Field;
 
 public class Main {
 
@@ -20,11 +12,12 @@ public class Main {
         // for (String key : maps.keySet()) {
         // System.out.println(key);
         // }
-        // String df = "RE.dsds.DS";
-        // String[] po = df.split("[.]");
-        // System.out.println("Atoo");
-        // for (int i = 0; i < po.length; i++) {
-        // System.out.println(po[i]);
-        // }
+        System.out.println("Hello World !! XD");
+        Test test = new Test();
+        Field[] fields = test.getClass().getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            System.out.println(fields[i].getType().getSimpleName());
+        }
     }
+
 }

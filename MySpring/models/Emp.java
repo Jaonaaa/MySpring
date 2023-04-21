@@ -16,6 +16,7 @@ public class Emp {
 
     }
 
+    @Method(urlTo = "emp-page.do")
     public ModelView empPage() {
         ModelView view = new ModelView();
         view.setUrl("Emp.jsp");

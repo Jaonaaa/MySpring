@@ -1,9 +1,6 @@
 package models;
 
 import java.util.Vector;
-
-import javax.crypto.Cipher;
-
 import Annotation.Choosen;
 import Annotation.Method;
 import utilities.ModelView;
@@ -11,12 +8,16 @@ import utilities.ModelView;
 @Choosen
 public class Emp {
 
-    @Method
+    private String name;
+    private int age;
+    private double salary;
+
+    @Method(urlTo = "hello.do")
     public String getHello() {
         return "<h1>Welcome</h1>";
     }
 
-    @Method
+    @Method(urlTo = "emp-page.do")
     public ModelView getPage() {
         ModelView view = new ModelView();
         Vector<String> params = new Vector<String>();
@@ -25,7 +26,6 @@ public class Emp {
         params.add("Hello Paolo");
         params.add("Hello Defefeeff");
         view.addItem("hellos", params);
-
         view.setUrl("Emp.jsp");
         return view;
     }
