@@ -1,6 +1,6 @@
 # Prérequies
 
-- Version
+- Version Version JDK 1.8  
 
 # Utilisation
 
