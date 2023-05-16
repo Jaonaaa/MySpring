@@ -1,7 +1,6 @@
 <%@ page language="java" contentType="text/html"
- import="java.util.*"
+ import="java.util.*,models.*"
 pageEncoding="UTF-8" %>
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -12,15 +11,21 @@ pageEncoding="UTF-8" %>
     <link rel="stylesheet" href="/Test_Framework/assets/css/Form.css">
   </head>
   <body>
-    <form action="hello.do" method="get" id="form-register">
-      <div class="title-form"> Enregistrer un employé</div>
-      
+<% 
+if(request.getAttribute("hellos") != null)
+{
+    Vector<String> list = (Vector<String>) request.getAttribute("hellos");
+
+%>
+
+    <div class="title-form"> Enregistrer un employé</div>
+    <form action="get-emp-by-id.do" method="get" id="form-register">
       <div class="list-input">
         <div class="row-form">
-          <div class="label-form"></div>
-          <select name="" id="">
+          <div class="label-form">Nom :</div>
+          <select name="name" id="h">
             <%
-            Vector<String> list = (Vector<String>) request.getAttribute("hellos");
+            
             for (int i = 0; i < list.size(); i++)
             {
              %>
@@ -29,13 +34,32 @@ pageEncoding="UTF-8" %>
               }
             %>
           </select>
-          <input type="number" placeholder="Age" name="age">
-          <input type="number" placeholder="Salary" name="salary">
-          <button>Validate</button> 
+          
+        </div>
+        <div class="row-form">
+          <div class="label-form">Age :</div>
+          <input type="number" placeholder="00" name="age">
+        </div>
+        <div class="row-form">
+          <div class="label-form">Salaire :</div>
+          <input type="number" placeholder="0000" name="salary">
+        </div>
+        <div class="row-form">
+          
+          <button class="btn_validate">Valider</button> 
         </div>
 
       </div>
     </form>
-  
+  <%  } 
+  out.print("Page Emp");
+  if(request.getAttribute("emp_target") != null)
+  { 
+   Emp emp = (Emp)request.getAttribute("emp_target");
+    %>
+    <div class="title-form"> L'Employé <% out.print(emp.getName()+" "+emp.getAge()); %></div>
+  <% 
+  }
+  %>
   </body>
 </html>

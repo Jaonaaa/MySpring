@@ -12,6 +12,7 @@ body {
   src: url(../fonts/Poppins-Light.ttf);
 }
 * {
+  font-family: Poppins;
 }
 .title-form {
   display: flex;
@@ -19,8 +20,57 @@ body {
   align-items: center;
   font-size: 2rem;
   font-family: Poppins;
+  margin: 2rem 0 2rem 0rem;
+}
+.list-input {
+  width: 25rem;
+  display: flex;
+  flex-direction: column;
+}
+#form-register {
+  margin: 1rem 0 0 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
 }
 
-#form-register {
-  margin: 2rem 0 0 1rem;
+input,
+select {
+  font-size: 0.87rem;
+  font-family: Poppins;
+  padding: 0.5rem 0.8rem;
+  border: 1px solid rgba(69, 67, 67, 0.515);
+  border-radius: 0.3rem;
+  box-sizing: border-box;
+  width: 100%;
+  outline: rgb(90, 176, 252);
+}
+select {
+  padding: 0.5rem 1rem;
+}
+.row-form {
+  margin: 1.3rem 0;
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  box-sizing: border-box;
+}
+.label-form {
+  width: 6rem;
+}
+.btn_validate {
+  font-size: 1rem;
+  font-family: Poppins;
+  border: none;
+  background-color: rgb(90, 176, 252);
+  padding: 0.73rem 2rem;
+  margin: auto;
+  color: white;
+  border-radius: 0.3rem;
+  cursor: pointer;
+  transition: all 0.2s ease-in-out;
+}
+.btn_validate:hover {
+  background-color: rgb(56, 145, 223);
 }
