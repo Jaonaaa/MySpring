@@ -1,6 +1,6 @@
 # Prérequies
 
-- Version Version JDK 1.8  
+- Version JDK 1.8  
 
 # Utilisation
 
@@ -10,7 +10,7 @@
 
   - Faite en sorte que tout les urls se terminant par '.do' passe par la class
     FrontServlet
-  - Mettre le dans la balise`param-value` le chemin vers vos fichier sources
+  - Mettre le dans la balise `param-value` le chemin vers vos fichier sources
 
   - Exemple:
 
@@ -22,7 +22,7 @@
     <init-param>
       <param-name>pathClass</param-name>
       <param-value>/WEB-INF/classes</param-value>
-      <description>Path to your classesr</description>
+      <description>Path to your classes</description>
     </servlet>
     <servlet-mapping>
       <servlet-name>FrontServlet</servlet-name>
