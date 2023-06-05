@@ -13,11 +13,13 @@ import com.google.gson.GsonBuilder;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
+import jakarta.servlet.annotation.MultipartConfig;
 import utilities.ModelView;
 import utilities.Url;
 
 import etu1915.framework.Mapping;
 
+@MultipartConfig(fileSizeThreshold = 2240 * 2240, maxFileSize = 2240 * 2240 * 5, maxRequestSize = 2240 * 2240 * 5 * 5)
 public class FrontServlet extends HttpServlet {
 
     HashMap<String, Mapping> mappingUrls;
@@ -37,7 +39,6 @@ public class FrontServlet extends HttpServlet {
             if (!urlPage.equals("")) {
                 urlTo = urlPage;
             }
-
             if (!urlPage.equals("")) {
                 RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" + urlPage);
                 dispat.forward(req, res);
@@ -47,9 +48,7 @@ public class FrontServlet extends HttpServlet {
                 Object target = save(res, req);
                 out.println(gson.toJson(target));
                 out.println("No redirection :( ");
-
             }
-
         } catch (Exception e) {
             out.println(" Exception : " + e.getMessage());
         }
@@ -59,14 +58,14 @@ public class FrontServlet extends HttpServlet {
         PrintWriter out = res.getWriter();
         try {
             String urlTo = "index.jsp";
-
             String urlPage = processRequest(res, req);
             if (!urlPage.equals("")) {
                 urlTo = urlPage;
             }
-
+            // rehefa mi return model view de ato
             if (!urlPage.equals("")) {
-                RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" + urlPage);
+                RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" +
+                        urlPage);
                 dispat.forward(req, res);
             } else {
                 GsonBuilder builder = new GsonBuilder();
@@ -75,7 +74,6 @@ public class FrontServlet extends HttpServlet {
                 out.println(gson.toJson(target));
                 out.println("No redirection :( ");
             }
-
         } catch (Exception e) {
             out.println(" Exception : " + e.getMessage());
         }
@@ -90,7 +88,6 @@ public class FrontServlet extends HttpServlet {
             ModelView view = null;
             urlSetted = mapping.getClassName();
             Class<?> classMapping = Class.forName(mapping.getClassName());
-            //
             // get the corresponding methods by the name in Mapping
             Vector<Method> methods = methodsMatchingName(mapping.getMethod(), classMapping);
             for (Method method : methods) {
@@ -106,8 +103,8 @@ public class FrontServlet extends HttpServlet {
                     if (view.getUrl() != null)
                         urlView = view.getUrl();
                 }
-                addDataToRequest(req, view);
                 if (view != null) {
+                    addDataToRequest(req, view);
                     break;
                 }
             }
@@ -151,7 +148,6 @@ public class FrontServlet extends HttpServlet {
             return null;
         Class<?> classMapping = Class.forName(mapping.getClassName());
         Object repere = classMapping.getConstructor().newInstance();
-
         //
         Field[] fields = repere.getClass().getDeclaredFields();
         // Get all field a try to match the filed and the parameter from the client
@@ -162,7 +158,9 @@ public class FrontServlet extends HttpServlet {
             String fieldName = fields[i].getName();
             // verify if the parameter filed is matching then continue or not
             String valueParameter = req.getParameter(fieldName);
-
+            // for the upload part
+            uploadFileIn(repere, req, fields[i], out);
+            //
             if (valueParameter == null) {
                 continue;
             }
@@ -171,8 +169,17 @@ public class FrontServlet extends HttpServlet {
         return repere;
     }
 
+    public void uploadFileIn(Object obj, HttpServletRequest req, Field field, PrintWriter out) throws Exception {
+        String fieldType = field.getType().getSimpleName();
+        out.println(fieldType);
+        if (fieldType.equals("Upload")) {
+            field.set(obj, Upload.uploadFile(req, this));
+        }
+    }
+
     public void validAffectationField(Object obj, Field field, String value) throws Exception {
         String fieldType = field.getType().getSimpleName();
+
         if (fieldType.equals("int") || fieldType.equals("Integer")) {
             field.set(obj, value == null || value.equals("") ? 0 : Integer.valueOf(value));
         } else if (fieldType.equals("Double")
@@ -184,7 +191,6 @@ public class FrontServlet extends HttpServlet {
         } else {
             field.set(obj, value == null ? null : value);
         }
-
     }
 
     public Object transformeValue(String value, String paramType) {
