@@ -31,6 +31,8 @@
   <myxml>
   ```
 
+## Association url
+
 - Pour associer une methode à un url :
 
   - Utiliser l'annotation "Method" et ajouter un attribut "urlTo" qui aura comme valeur l'url que vous
@@ -53,6 +55,7 @@
     }
 
     ```
+## Transfert de données
 
 - Pous envoyer des données depuis le backend vers le frontend avec `ModelView`:
 
@@ -81,21 +84,27 @@
 
     <br>
 
-- Pous envoyer des données depuis le frontend vers le backend:
+- Pour envoyer des données depuis le frontend vers le backend:
 
   - Utiliser la fonction `save()` dans le FrontServlet pour récupérer les données transmisent depuis le Client
   - Veuiller à ce que les noms des champs que vous vouler envoyer correspondate aux noms des attributs de la classe cible
 
 - Pour appeler une fonction qui prend en compte un ou des parametres :
 
-  - Lors de la compilation de vos fichier.java veuiller utiliser l'option `-parameters `
+  - Lors de la compilation de vos fichier.java veuiller utiliser l'option `-parameters ` 
+  
+  <br/>
 
   ```bat
   javac -parameters fichier.java
   ```
 
   - Veuillez à ce que les noms des champs envoyés correspondent aux nom des parametres de la fonction
-    -Exemple : <br> Votre classe
+  
+   </br>
+    -Exemple : <br> 
+    
+    Votre classe :
 
     ```java
     @Method(urlTo = "get-emp-by-id.do")
@@ -104,7 +113,7 @@
     }
     ```
 
-    <br> Champ correspondante
+    <br> Champ correspondante : 
 
     ```html
     <form action="get-emp-by-id.do" method="get">
@@ -113,8 +122,42 @@
     </form>
     ```
 
+### Upload 
+
+- Pour uploader un fichier , veuillez mettre comme attribut de votre classe l'objet `Upload` pour qu'il vérifie l'envoye d'un fichier si c'est présent durant l'opération.
+
+- Exemple : <br> 
+
+```java 
+@Choosen
+public class Emp {
+
+    private Upload pictureEmp;
+
+}
+```
+
+
+ ### Singleton   
+
+- Pour assurer qu'une classe utilise la méthode de singleton ( il n'a qu'une seule instance )
+  durant son utilisation.
+   
+   - Veuillez annoter la classe avec l'annotation `Choosen` ayant comme porté un `singleton`
+
+   - Exemple : <br>
+
+   ```java	
+  	@Choosen(scope = "singleton")
+  public class Emp {
+    ...
+    }
+
+   ``
+
 # Installation
 
+  -  Utiliser le fichier go.bat ....
 <!--
 The "go.bat" file compile all .class file in the framework then create a .jar file and move that file in the
 lib of the "Test_Framework" , then it create a .war file from the Test_Framework and you should see that
