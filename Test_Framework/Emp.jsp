@@ -18,7 +18,7 @@ if(request.getAttribute("hellos") != null)
 
 %>
 
-    <div class="title-form"> Enregistrer un employé</div>
+    <div class="title-form"> Enregistrer un employé </div>
     <form action="get-emp-by-id.do" method="get" id="form-register">
       <div class="list-input">
         <div class="row-form">
@@ -31,7 +31,7 @@ if(request.getAttribute("hellos") != null)
              %>
              <option> <% out.print(list.get(i)+"</br>"); %>  </option>
             <%
-              }
+              } 
             %>
           </select>
           
@@ -44,8 +44,17 @@ if(request.getAttribute("hellos") != null)
           <div class="label-form">Salaire :</div>
           <input type="number" placeholder="0000" name="salary">
         </div>
+        <% 
+          out.print(request.getAttribute("counter"));
+        %>
+       <% if(request.getAttribute("counter") != null)
+          { %>
         <div class="row-form">
-          
+          <div class="label-form">Counter : <% out.println(request.getAttribute("counter")); %></div>
+        </div>
+        <% } %>
+
+        <div class="row-form">
           <button class="btn_validate">Valider</button> 
         </div>
 
@@ -60,6 +69,7 @@ if(request.getAttribute("hellos") != null)
     <div class="title-form"> L'Employé <% out.print(emp.getName()+" "+emp.getAge()); %></div>
   <% 
   }
+  
   %>
   </body>
 </html>

@@ -5,7 +5,7 @@ import Annotation.Method;
 import utilities.ModelView;
 import java.util.Vector;;
 
-@Choosen
+@Choosen(scope = "singleton")
 public class Emp {
 
     private String name;

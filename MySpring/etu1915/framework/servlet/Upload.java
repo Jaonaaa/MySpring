@@ -29,6 +29,7 @@ public class Upload {
             upload = getFileData(uploadPath + File.separator + fileName, fileName);
         }
         return upload;
+
     }
 
     public static Upload getFileData(String pathFile, String filename) throws Exception {

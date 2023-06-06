@@ -11,6 +11,7 @@ import java.util.Vector;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import Annotation.Choosen;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -23,18 +24,19 @@ import etu1915.framework.Mapping;
 public class FrontServlet extends HttpServlet {
 
     HashMap<String, Mapping> mappingUrls;
+    HashMap<String, Object> singletonsClass;
 
     public void init() throws ServletException {
         super.init();
         String pathToClasses = this.getInitParameter("pathClass");
         this.mappingUrls = this.getMap(pathToClasses);
+        this.singletonsClass = new HashMap<String, Object>();
     }
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
         try {
             String urlTo = "index.jsp";
-
             String urlPage = processRequest(res, req);
             if (!urlPage.equals("")) {
                 urlTo = urlPage;
@@ -46,6 +48,7 @@ public class FrontServlet extends HttpServlet {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
                 Object target = save(res, req);
+                out.println(target);
                 out.println(gson.toJson(target));
                 out.println("No redirection :( ");
             }
@@ -71,6 +74,7 @@ public class FrontServlet extends HttpServlet {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
                 Object target = save(res, req);
+                out.println(target);
                 out.println(gson.toJson(target));
                 out.println("No redirection :( ");
             }
@@ -93,7 +97,7 @@ public class FrontServlet extends HttpServlet {
             for (Method method : methods) {
                 Class<?> returnType = method.getReturnType();
                 if (returnType == Class.forName("utilities.ModelView")) {
-                    Object switchClass = classMapping.getConstructor().newInstance();
+                    Object switchClass = this.getInstance(classMapping);
                     // check if the method invoked has argument or not
                     if (method.getParameterCount() == 0) {
                         view = (ModelView) method.invoke(switchClass);
@@ -111,6 +115,34 @@ public class FrontServlet extends HttpServlet {
 
         }
         return urlView;
+    }
+
+    public boolean isSingletion(Class classTarget) {
+        Boolean present = false;
+        if (classTarget.isAnnotationPresent(Choosen.class)) {
+            Choosen choosen = (Choosen) classTarget.getAnnotation(Choosen.class);
+            if (choosen.scope().equals(("singleton"))) {
+                present = true;
+            }
+        }
+        return present;
+    }
+
+    public Object getInstance(Class classTarget) throws Exception {
+        Boolean singleton = isSingletion(classTarget);
+        if (singleton) {
+            String key = classTarget.getName();
+            Object instance = this.singletonsClass.get(key);
+            if (instance == null) {
+                Object newInstance = classTarget.getConstructor().newInstance();
+                this.singletonsClass.put(newInstance.getClass().getName(), newInstance);
+                return newInstance;
+            } else {
+                return instance;
+            }
+        } else {
+            return classTarget.getConstructor().newInstance();
+        }
     }
 
     public Object[] getMethodParamValues(Method method, HttpServletRequest req, HttpServletResponse res)
@@ -147,7 +179,7 @@ public class FrontServlet extends HttpServlet {
         if (mapping == null)
             return null;
         Class<?> classMapping = Class.forName(mapping.getClassName());
-        Object repere = classMapping.getConstructor().newInstance();
+        Object repere = this.getInstance(classMapping);
         //
         Field[] fields = repere.getClass().getDeclaredFields();
         // Get all field a try to match the filed and the parameter from the client
@@ -172,6 +204,7 @@ public class FrontServlet extends HttpServlet {
     public void uploadFileIn(Object obj, HttpServletRequest req, Field field, PrintWriter out) throws Exception {
         String fieldType = field.getType().getSimpleName();
         out.println(fieldType);
+
         if (fieldType.equals("Upload")) {
             field.set(obj, Upload.uploadFile(req, this));
         }
