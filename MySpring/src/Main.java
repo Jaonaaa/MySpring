@@ -10,6 +10,7 @@ public class Main {
     public static void main(String[] args) throws Exception {
 
         Test test = new Test();
+        System.out.println(test.getClass().getName());
         Field[] fields = test.getClass().getDeclaredFields();
         //
         //

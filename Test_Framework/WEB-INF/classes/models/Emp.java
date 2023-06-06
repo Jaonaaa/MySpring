@@ -4,14 +4,17 @@ import java.util.Vector;
 
 import Annotation.Choosen;
 import Annotation.Method;
+import etu1915.framework.servlet.Upload;
 import utilities.ModelView;
 
-@Choosen
+@Choosen(scope = "singleton")
 public class Emp {
 
     private String name;
     private int age;
     private double salary;
+    private Upload empPicture;
+    private int counter = 0;
 
     public Emp() {
     }
@@ -44,6 +47,8 @@ public class Emp {
         else
             view.addItem("emp_target", emp3);
 
+        view.addItem("counter", this.counter + 1);
+
         view.setUrl("Emp.jsp");
         return view;
     }
@@ -57,8 +62,17 @@ public class Emp {
         params.add("Hello Paolo");
         params.add("Hello Defefeeff");
         view.addItem("hellos", params);
+        this.counter = this.counter + 1;
+        view.addItem("counter", this.counter);
+
         view.setUrl("Emp.jsp");
         return view;
+    }
+
+    @Method(urlTo = "upload.do")
+    public String uploadF() {
+
+        return "Hello world!";
     }
 
     public String getName() {

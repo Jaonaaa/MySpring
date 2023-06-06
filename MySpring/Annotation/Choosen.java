@@ -11,4 +11,5 @@ public @interface Choosen {
 
     String name() default "Choosen popo";
 
+    String scope() default "normal";
 }
