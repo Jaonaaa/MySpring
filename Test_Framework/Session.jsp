@@ -8,8 +8,8 @@ pageEncoding="UTF-8" %>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Sessions</title>
     <link rel="stylesheet" href="/Test_Framework/assets/css/Form.css" />
-    <link rel="stylesheet" href="./assets/css/font.css" />
-    <link rel="stylesheet" href="./assets/css/index.css" />
+    <link rel="stylesheet" href="/Test_Framework/assets/css/font.css" />
+    <link rel="stylesheet" href="/Test_Framework/assets/css/index.css" />
   </head>
   <body>
     <div id="root">

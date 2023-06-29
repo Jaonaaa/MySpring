@@ -1,10 +1,10 @@
 
-set rootPath="C:/Users/Jaona/Desktop/Naina Repository/ 
+set rootPath="C:\Users\Jaona\Desktop\Naina Repository\ 
 set warFileName=projet_test.war 
-set jspFilePath="C:\Program Files\Apache Software Foundation\Tomcat 10.0\webapps\Test_Framework
-set sourceProjectPath="C:\Program Files\Apache Software Foundation\Tomcat 10.0\webapps\Test_Framework\WEB-INF\classes\"
+set jspFilePath="C:\Users\Jaona\Desktop\Naina Repository\Test_Framework
+set sourceProjectPath="C:\Users\Jaona\Desktop\Naina Repository\Test_Framework\WEB-INF\classes\"
 set tempFilePath="C:\Users\Jaona\Desktop\Naina Repository\
-set xmlConfigFile="C:\Program Files\Apache Software Foundation\Tomcat 10.0\webapps\Test_Framework\WEB-INF\web.xml"
+set xmlConfigFile="C:\Users\Jaona\Desktop\Naina Repository\Test_Framework\WEB-INF\web.xml"
 
 @REM Compile the framework
 cd MySpring
