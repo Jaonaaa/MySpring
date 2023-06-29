@@ -6,12 +6,16 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.Vector;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import Annotation.Auth;
 import Annotation.Choosen;
+import Annotation.JsonData;
+import Annotation.UseSession;
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
 import jakarta.servlet.annotation.MultipartConfig;
@@ -35,11 +39,13 @@ public class FrontServlet extends HttpServlet {
 
     protected void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
+        Object urlPage = null;
         try {
+            this.init_Sessions(req);
             String urlTo = "index.jsp";
-            String urlPage = processRequest(res, req);
+            urlPage = processRequest(res, req);
             if (!urlPage.equals("")) {
-                urlTo = urlPage;
+                urlTo = (String) urlPage;
             }
             if (!urlPage.equals("")) {
                 RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" + urlPage);
@@ -48,9 +54,9 @@ public class FrontServlet extends HttpServlet {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
                 Object target = save(res, req);
-                out.println(target);
+                // out.println(target);
                 out.println(gson.toJson(target));
-                out.println("No redirection :( ");
+                // out.println("No redirection :( ");
             }
         } catch (Exception e) {
             out.println(" Exception : " + e.getMessage());
@@ -59,65 +65,169 @@ public class FrontServlet extends HttpServlet {
 
     protected void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
         PrintWriter out = res.getWriter();
+        Object urlPage = null;
         try {
+            this.init_Sessions(req);
             String urlTo = "index.jsp";
-            String urlPage = processRequest(res, req);
+            urlPage = processRequest(res, req);
             if (!urlPage.equals("")) {
-                urlTo = urlPage;
+                urlTo = (String) urlPage;
             }
-            // rehefa mi return model view de ato
             if (!urlPage.equals("")) {
-                RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" +
-                        urlPage);
+                RequestDispatcher dispat = req.getRequestDispatcher("/" + urlTo + "?" + urlPage);
                 dispat.forward(req, res);
             } else {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
                 Object target = save(res, req);
-                out.println(target);
+                // out.println(target);
                 out.println(gson.toJson(target));
-                out.println("No redirection :( ");
+                // out.println("No redirection :( ");
             }
         } catch (Exception e) {
             out.println(" Exception : " + e.getMessage());
         }
     }
 
-    public String processRequest(HttpServletResponse res, HttpServletRequest req) throws Exception {
+    public void init_Sessions(HttpServletRequest req) throws Exception {
+        String session_profile_name = this.getInitParameter("session_name");
+        // Vérifier si une session existe
+        HttpSession session = req.getSession();
+        if (session.getAttribute(session_profile_name) == null) {
+            session.setAttribute(session_profile_name, null);
+        }
+    }
+
+    public Object processRequest(HttpServletResponse res, HttpServletRequest req) throws Exception {
+        PrintWriter out = res.getWriter();
         String urlSetted = Url.getUrlSetted(res, req);
         String urlView = "";
         // verify if the url setted is in the hashmap
         Mapping mapping = mappingUrls.get(urlSetted);
+
         if (mapping != null) {
+
             ModelView view = null;
             urlSetted = mapping.getClassName();
             Class<?> classMapping = Class.forName(mapping.getClassName());
             // get the corresponding methods by the name in Mapping
             Vector<Method> methods = methodsMatchingName(mapping.getMethod(), classMapping);
-            for (Method method : methods) {
-                Class<?> returnType = method.getReturnType();
-                if (returnType == Class.forName("utilities.ModelView")) {
-                    Object switchClass = this.getInstance(classMapping);
-                    // check if the method invoked has argument or not
-                    if (method.getParameterCount() == 0) {
-                        view = (ModelView) method.invoke(switchClass);
-                    } else {
-                        view = (ModelView) method.invoke(switchClass, getMethodParamValues(method, req, res));
-                    }
-                    if (view.getUrl() != null)
-                        urlView = view.getUrl();
-                }
-                if (view != null) {
-                    addDataToRequest(req, view);
-                    break;
-                }
-            }
+            int counterAcces = 0;
 
+            for (Method method : methods) {
+                boolean hasAccess = this.checkAccess(req, method);
+                if (hasAccess) {
+                    if (checkIfJsonReturnValue(method, classMapping, res, req)) {
+                        return urlView;
+                    } else {
+                        view = this.getViewRequested(classMapping, method, req, res);
+                        if (view != null) {
+                            Object dataJson = checkIfJsonRequested(req, view);
+                            // Check if ther is a data transformed into json
+                            if (dataJson != null) {
+                                out.println(dataJson);
+                                return urlView;
+                            }
+                            if (view.getUrl() != null)
+                                urlView = view.getUrl();
+                            break;
+                        }
+                    }
+
+                } else
+                    counterAcces++;
+            }
+            if (counterAcces == methods.size())
+                throw new Exception("Vous n'avez pas d'accès pour voir ce contenue");
         }
         return urlView;
     }
 
-    public boolean isSingletion(Class classTarget) {
+    public Boolean checkIfJsonReturnValue(Method method, Class<?> classReference, HttpServletResponse res,
+            HttpServletRequest req) throws Exception {
+        PrintWriter out = res.getWriter();
+        if (method.isAnnotationPresent(JsonData.class)) {
+            Object value = this.getReturnValue(classReference, method, req);
+            if (value != null) {
+                GsonBuilder builder = new GsonBuilder();
+                Gson gson = builder.create();
+                out.println(gson.toJson(value));
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public ModelView getViewRequested(Class<?> classReference, Method method, HttpServletRequest req,
+            HttpServletResponse res) throws Exception {
+        ModelView view = null;
+        Class<?> returnType = method.getReturnType();
+        if (returnType == Class.forName("utilities.ModelView")) {
+            Object switchClass = this.getInstance(classReference, method, req);
+            // check if the method invoked has argument or not
+            if (method.getParameterCount() == 0) {
+                view = (ModelView) method.invoke(switchClass);
+            } else {
+                view = (ModelView) method.invoke(switchClass, getMethodParamValues(method, req));
+            }
+        }
+        if (view != null) {
+            addSessionFromView(req, view);
+            addDataToRequest(req, view);
+        }
+        return view;
+    }
+
+    public Object getReturnValue(Class<?> classReference, Method method, HttpServletRequest req) throws Exception {
+        Object returnValue = null;
+        Class<?> returnType = method.getReturnType();
+
+        Object switchClass = this.getInstance(classReference, method, req);
+        // check if the method invoked has argument or not
+        if (method.getParameterCount() == 0) {
+            returnValue = method.invoke(switchClass);
+        } else {
+            returnValue = method.invoke(switchClass, getMethodParamValues(method, req));
+        }
+        return returnValue;
+    }
+
+    public void addSessionFromView(HttpServletRequest req, ModelView view) {
+        HttpSession session = req.getSession();
+        HashMap<String, Object> sessionHashMap = view.getSessions();
+        for (Map.Entry<String, Object> entry : sessionHashMap.entrySet()) {
+            session.setAttribute(entry.getKey(), entry.getValue());
+        }
+    }
+
+    public boolean checkAccess(HttpServletRequest req, Method method) throws Exception {
+        boolean authorized = false;
+        if (method.isAnnotationPresent(Auth.class)) {
+            Auth auth = (Auth) method.getAnnotation(Auth.class);
+            String[] profilType = auth.profil();
+            if (profilType.length == 0)
+                return true;
+            String profile_user = getCurrentProfil(req);
+            if (profile_user == null)
+                return false;
+            for (String profile : profilType) {
+                if (profile_user.equals(profile))
+                    authorized = true;
+            }
+        } else {
+            return true;
+        }
+        return authorized;
+    }
+
+    public String getCurrentProfil(HttpServletRequest req) {
+        String session_profile_name = this.getInitParameter("session_name");
+        HttpSession session = req.getSession();
+        String profile = (String) session.getAttribute(session_profile_name);
+        return profile;
+    }
+
+    public boolean isSingleton(Class classTarget) {
         Boolean present = false;
         if (classTarget.isAnnotationPresent(Choosen.class)) {
             Choosen choosen = (Choosen) classTarget.getAnnotation(Choosen.class);
@@ -128,29 +238,58 @@ public class FrontServlet extends HttpServlet {
         return present;
     }
 
-    public Object getInstance(Class classTarget) throws Exception {
-        Boolean singleton = isSingletion(classTarget);
+    public Object getInstance(Class classTarget, Method method, HttpServletRequest req) throws Exception {
+        Boolean singleton = isSingleton(classTarget);
         if (singleton) {
             String key = classTarget.getName();
             Object instance = this.singletonsClass.get(key);
             if (instance == null) {
                 Object newInstance = classTarget.getConstructor().newInstance();
+                this.checkIsSessionRequested(method, newInstance, req);
                 this.singletonsClass.put(newInstance.getClass().getName(), newInstance);
                 return newInstance;
             } else {
+                this.checkIsSessionRequested(method, instance, req);
                 return instance;
             }
         } else {
-            return classTarget.getConstructor().newInstance();
+            Object newInstance = classTarget.getConstructor().newInstance();
+            this.checkIsSessionRequested(method, newInstance, req);
+            return newInstance;
         }
     }
 
-    public Object[] getMethodParamValues(Method method, HttpServletRequest req, HttpServletResponse res)
+    public void checkIsSessionRequested(Method method, Object instance, HttpServletRequest req) throws Exception {
+        if (method != null && instance != null) {
+            if (method.isAnnotationPresent(UseSession.class)) {
+                // Vérifier si une session existe
+                HttpSession session = req.getSession();
+                Enumeration<String> sessionKey = session.getAttributeNames();
+                HashMap<String, Object> newSession = new HashMap<String, Object>();
+                //
+                while (sessionKey.hasMoreElements()) {
+                    String key = sessionKey.nextElement();
+                    newSession.put(key, session.getAttribute(key));
+                }
+                this.addSessionToClass(instance, newSession);
+            }
+        }
+    }
+
+    public void addSessionToClass(Object instance, HashMap<String, Object> sessions) throws Exception {
+        Field[] fields = instance.getClass().getDeclaredFields();
+        for (int i = 0; i < fields.length; i++) {
+            if (fields[i].getName().equals("sessions")) {
+                fields[i].setAccessible(true);
+                fields[i].set(instance, sessions);
+            }
+        }
+    }
+
+    public Object[] getMethodParamValues(Method method, HttpServletRequest req)
             throws Exception {
         Vector<Object> paramsValues = new Vector<Object>();
         Parameter[] params = method.getParameters();
-        PrintWriter out = res.getWriter();
-
         for (Parameter parameter : params) {
             String valueParam = req.getParameter(parameter.getName());
             paramsValues.add(transformeValue(valueParam, parameter.getType().getSimpleName()));
@@ -179,7 +318,7 @@ public class FrontServlet extends HttpServlet {
         if (mapping == null)
             return null;
         Class<?> classMapping = Class.forName(mapping.getClassName());
-        Object repere = this.getInstance(classMapping);
+        Object repere = this.getInstance(classMapping, null, req);
         //
         Field[] fields = repere.getClass().getDeclaredFields();
         // Get all field a try to match the filed and the parameter from the client
@@ -203,8 +342,6 @@ public class FrontServlet extends HttpServlet {
 
     public void uploadFileIn(Object obj, HttpServletRequest req, Field field, PrintWriter out) throws Exception {
         String fieldType = field.getType().getSimpleName();
-        out.println(fieldType);
-
         if (fieldType.equals("Upload")) {
             field.set(obj, Upload.uploadFile(req, this));
         }
@@ -245,6 +382,17 @@ public class FrontServlet extends HttpServlet {
         for (String key : datas.keySet()) {
             req.setAttribute(key, datas.get(key));
         }
+    }
+
+    public Object checkIfJsonRequested(HttpServletRequest req, ModelView view) {
+        Boolean isRequested = view.getIsJson();
+        Object dataJson = null;
+        if (isRequested) {
+            GsonBuilder builder = new GsonBuilder();
+            Gson gson = builder.create();
+            dataJson = gson.toJson(view.getDatas());
+        }
+        return dataJson;
     }
 
     public HashMap<String, Mapping> getMap(String pathToClasses) {

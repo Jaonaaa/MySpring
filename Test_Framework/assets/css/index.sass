@@ -1,0 +1,94 @@
+$primary: #00357B
+
+body
+    margin: 0
+    padding: 0
+
+#root
+    display: flex
+    flex-direction: column
+    box-sizing: border-box
+    font-family: Poppins
+    width: 100%
+    align-items: center
+    min-height: 50vh
+    justify-content: center
+    .middle-section
+        display: flex
+        flex-direction: column
+        box-sizing: border-box
+        .title-section
+            font-size: 2.8rem
+            font-family: Poppins-Bold
+            margin-bottom: 4rem
+            margin-top: 4rem
+            text-align: center
+        .list-response
+            display: flex
+            margin: auto
+            align-items: center
+            justify-content: center
+            flex-wrap: wrap
+            max-width: 70vw
+            .response-box
+                display: flex
+                box-sizing: border-box
+                padding: 1rem 1.3rem
+                cursor: pointer
+                border: 3px solid $primary
+                margin: 1rem
+                position: relative
+                transition: all 0.2s ease-in-out
+                &::before
+                    content: ""
+                    position: absolute
+                    bottom: 0
+                    left: 0
+                    width: 100%
+                    transition: all 0.2s ease-in-out
+                    height: 0%
+                    background: $primary
+                .text-response
+                    color: $primary
+                    font-family: Poppins-Bold
+                    font-size: 1.1rem
+                    transition: all 0.2s ease-in-out
+                &:hover
+                    .text-response
+                        color: rgb(255,255 ,255 )
+                        z-index: 2
+                    &::before
+                        height: 100%
+                .detail-response
+                    position: absolute
+                    top: 130%
+                    transition: all 0.2s ease-in-out
+                    left: 50%
+                    transform: translateX(-50%)
+                    background: white
+                    z-index: 3
+                    border: 1px solid $primary
+                    display: flex
+                    justify-content: center
+                    flex-direction: column
+                    align-items: center
+                    padding: 0.4rem 0.7rem
+                    opacity: 0
+                    border-radius: 0.1rem
+                    .url-title
+                        text-align: center
+                        font-family: Poppins-Bold
+                        font-size: 1rem
+                        margin-bottom: 0.4rem
+                    .url-path
+                        font-size: 0.9rem
+                        white-space: nowrap
+                        text-decoration: underline
+                        color: $primary
+
+            .selected-box-response
+                &::before
+                    height: 100%
+                .text-response
+                    color: rgb(255,255 ,255 )
+                    z-index: 2

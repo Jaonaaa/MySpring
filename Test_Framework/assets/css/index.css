@@ -1,0 +1,104 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-family: Poppins;
+  width: 100%;
+  align-items: center;
+  min-height: 50vh;
+  justify-content: center;
+}
+#root .middle-section {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+}
+#root .middle-section .title-section {
+  font-size: 2.8rem;
+  font-family: Poppins-Bold;
+  margin-bottom: 4rem;
+  margin-top: 4rem;
+  text-align: center;
+}
+#root .middle-section .list-response {
+  display: flex;
+  margin: auto;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  max-width: 70vw;
+}
+#root .middle-section .list-response .response-box {
+  display: flex;
+  box-sizing: border-box;
+  padding: 1rem 1.3rem;
+  cursor: pointer;
+  border: 3px solid #00357B;
+  margin: 1rem;
+  position: relative;
+  transition: all 0.2s ease-in-out;
+}
+#root .middle-section .list-response .response-box::before {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  transition: all 0.2s ease-in-out;
+  height: 0%;
+  background: #00357B;
+}
+#root .middle-section .list-response .response-box .text-response {
+  color: #00357B;
+  font-family: Poppins-Bold;
+  font-size: 1.1rem;
+  transition: all 0.2s ease-in-out;
+}
+#root .middle-section .list-response .response-box:hover .text-response {
+  color: rgb(255, 255, 255);
+  z-index: 2;
+}
+#root .middle-section .list-response .response-box:hover::before {
+  height: 100%;
+}
+#root .middle-section .list-response .response-box .detail-response {
+  position: absolute;
+  top: 130%;
+  transition: all 0.2s ease-in-out;
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  z-index: 3;
+  border: 1px solid #00357B;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  padding: 0.4rem 0.7rem;
+  opacity: 0;
+  border-radius: 0.1rem;
+}
+#root .middle-section .list-response .response-box .detail-response .url-title {
+  text-align: center;
+  font-family: Poppins-Bold;
+  font-size: 1rem;
+  margin-bottom: 0.4rem;
+}
+#root .middle-section .list-response .response-box .detail-response .url-path {
+  font-size: 0.9rem;
+  white-space: nowrap;
+  text-decoration: underline;
+  color: #00357B;
+}
+#root .middle-section .list-response .selected-box-response::before {
+  height: 100%;
+}
+#root .middle-section .list-response .selected-box-response .text-response {
+  color: rgb(255, 255, 255);
+  z-index: 2;
+}/*# sourceMappingURL=index.css.map */

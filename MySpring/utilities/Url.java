@@ -49,7 +49,6 @@ public class Url {
     public HashMap<String, Mapping> getGuide(String packageName) throws Exception {
         Vector<Mapping> mappings = new Vector<Mapping>();
         Vector<Class<?>> classes = null;
-        ////
         try {
 
             classes = this.getAllClasses(packageName + "\\", packageName, new Vector<Class<?>>());

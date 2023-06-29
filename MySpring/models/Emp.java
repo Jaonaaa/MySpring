@@ -2,8 +2,10 @@ package models;
 
 import Annotation.Choosen;
 import Annotation.Method;
+import Annotation.Auth;
 import utilities.ModelView;
-import java.util.Vector;;
+import java.util.Vector;
+import java.util.HashMap;
 
 @Choosen(scope = "singleton")
 public class Emp {
@@ -11,6 +13,7 @@ public class Emp {
     private String name;
     private int age;
     private double salary;
+    public HashMap<String, Object> sessions;
 
     public Emp() {
     }
@@ -21,6 +24,7 @@ public class Emp {
         this.salary = salary;
     }
 
+    @Auth
     @Method(urlTo = "get-emp-by-id.do")
     public ModelView getEmpById(int id) {
         ModelView view = new ModelView();

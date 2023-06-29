@@ -12,6 +12,11 @@
             <param-value>/WEB-INF/classes</param-value>
             <description>Path to your classesr</description>
         </init-param>
+        <init-param>
+            <param-name>session_name</param-name>
+            <param-value>Profil</param-value>
+            <description>Name of the session key</description>
+        </init-param>
     </servlet>
 
     <servlet-mapping>
