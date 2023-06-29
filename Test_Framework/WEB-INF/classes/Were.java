@@ -2,7 +2,6 @@ import Annotation.Choosen;
 import models.Emp;
 
 public class Were {
-
     public static void main(String[] args) {
 
         Emp e = new Emp();

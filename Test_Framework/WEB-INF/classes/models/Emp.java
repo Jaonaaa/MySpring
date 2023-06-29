@@ -2,8 +2,11 @@ package models;
 
 import java.util.Vector;
 
+import Annotation.Auth;
 import Annotation.Choosen;
+import Annotation.JsonData;
 import Annotation.Method;
+import Annotation.UseSession;
 import etu1915.framework.servlet.Upload;
 import utilities.ModelView;
 
@@ -25,6 +28,7 @@ public class Emp {
         this.salary = salary;
     }
 
+    @Auth(profil = { "admin" })
     @Method(urlTo = "get-emp-by-id.do")
     public ModelView getEmpById(int id, String test) {
         ModelView view = new ModelView();
@@ -47,13 +51,11 @@ public class Emp {
         else
             view.addItem("emp_target", emp3);
 
-        view.addItem("counter", this.counter + 1);
-
         view.setUrl("Emp.jsp");
         return view;
     }
 
-    @Method(urlTo = "emp-page.do")
+    @Method(urlTo = "add-emp.do")
     public ModelView getPage() {
         ModelView view = new ModelView();
         Vector<String> params = new Vector<String>();
@@ -69,10 +71,59 @@ public class Emp {
         return view;
     }
 
-    @Method(urlTo = "upload.do")
-    public String uploadF() {
+    @Method(urlTo = "login.do")
+    public ModelView login() {
+        ModelView view = new ModelView();
+        view.addSession("Profil", "admin");
+        view.setUrl("index.jsp");
+        return view;
+    }
 
-        return "Hello world!";
+    @Method(urlTo = "view-to-json.do")
+    public ModelView viewJson() {
+        ModelView view = new ModelView();
+        view.addItem("test", "hello World");
+        view.addItem("name", "Person");
+        view.setIsJson(true);
+        return view;
+    }
+
+    @JsonData
+    @Method(urlTo = "return-to-json.do")
+    public Object toJson() {
+        ModelView view = new ModelView();
+        view.addItem("test", "mety le testtt");
+        view.addItem("name", "Person");
+        return view;
+    }
+
+    @Method(urlTo = "logout.do")
+    public ModelView log_out() {
+        ModelView view = new ModelView();
+        view.addSession("Profil", null);
+        view.setUrl("index.jsp");
+        return view;
+    }
+
+    @UseSession
+    @Method(urlTo = "checkSession.do")
+    public ModelView sessions() {
+        ModelView view = new ModelView();
+        view.addSession("SessionCheck", "Correct");
+        view.setUrl("Session.jsp");
+        return view;
+    }
+
+    @Method(urlTo = "UploadPage.do")
+    public ModelView uploadPage() {
+        ModelView view = new ModelView();
+        view.setUrl("Upload.jsp");
+        return view;
+    }
+
+    @Method(urlTo = "upload.do")
+    public String upload() {
+        return "Hello World";
     }
 
     public String getName() {

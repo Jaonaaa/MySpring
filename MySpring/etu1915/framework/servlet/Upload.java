@@ -15,19 +15,27 @@ public class Upload {
 
     public static Upload uploadFile(HttpServletRequest request, HttpServlet servlet)
             throws Exception {
-
-        String upload_directory = "uploads";
-        String uploadPath = servlet.getServletContext().getRealPath("") + File.separator + upload_directory;
-        File uploadDir = new File(uploadPath);
-        if (!uploadDir.exists())
-            uploadDir.mkdir();
-
         Upload upload = new Upload();
-        for (Part part : request.getParts()) {
-            String fileName = getFileName(part);
-            part.write(uploadPath + File.separator + fileName);
-            upload = getFileData(uploadPath + File.separator + fileName, fileName);
+        try {
+            String upload_directory = "uploads";
+            String uploadPath = servlet.getServletContext().getRealPath("") + File.separator + upload_directory;
+            File uploadDir = new File(uploadPath);
+            if (!uploadDir.exists())
+                uploadDir.mkdir();
+
+            for (Part part : request.getParts()) {
+                String fileName = getFileName(part);
+                part.write(uploadPath + File.separator + fileName);
+                upload = getFileData(uploadPath + File.separator + fileName, fileName);
+            }
+        } catch (Exception e) {
+            // for not showing the error message of
+            // Exception :
+            // org.apache.tomcat.util.http.fileupload.impl.InvalidContentTypeException: the
+            // request doesn't contain a multipart/form-data or multipart/mixed stream,
+            // content type header is null
         }
+
         return upload;
 
     }

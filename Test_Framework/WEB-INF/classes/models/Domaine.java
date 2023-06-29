@@ -15,7 +15,6 @@ public class Domaine {
         ModelView view = new ModelView();
         view.setUrl("Domaine.jsp");
         this.counter = this.counter + 1;
-
         view.addItem("counter", this.counter);
         return view;
     }

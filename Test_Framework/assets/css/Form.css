@@ -18,9 +18,10 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-size: 2rem;
-  font-family: Poppins;
-  margin: 2rem 0 2rem 0rem;
+  font-size: 2.8rem;
+  font-family: Poppins-Bold;
+  text-align: center;
+  margin: 2rem 0 2.5rem 0rem;
 }
 .list-input {
   width: 25rem;
@@ -44,7 +45,7 @@ select {
   border-radius: 0.3rem;
   box-sizing: border-box;
   width: 100%;
-  outline: rgb(90, 176, 252);
+  outline: rgb(49, 141, 221);
 }
 select {
   padding: 0.5rem 1rem;
@@ -57,14 +58,16 @@ select {
   box-sizing: border-box;
 }
 .label-form {
-  width: 6rem;
+  width: 8rem;
 }
 .btn_validate {
-  font-size: 1rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.11rem;
   font-family: Poppins;
   border: none;
-  background-color: rgb(90, 176, 252);
+  background-color: rgb(49, 141, 221);
   padding: 0.73rem 2rem;
+  font-weight: bolder;
   margin: auto;
   color: white;
   border-radius: 0.3rem;
@@ -72,5 +75,42 @@ select {
   transition: all 0.2s ease-in-out;
 }
 .btn_validate:hover {
-  background-color: rgb(56, 145, 223);
+  background-color: rgb(9, 84, 150);
+}
+.bolded {
+  font-weight: bolder;
+  font-size: 1.2rem;
+  width: auto;
+  margin-right: 1.3rem;
+}
+.value-bolded {
+  font-size: 1rem;
+}
+
+tr {
+  height: 2.5rem;
+}
+
+th {
+  text-align: left;
+  height: 3.2rem;
+  font-size: 1.4rem;
+  border-right: 1px solid grey;
+  padding-left: 0.5rem;
+  border-bottom: 1px solid grey;
+}
+td {
+  padding: 0 4rem 0 0.5rem;
+  border-right: 1px solid grey;
+}
+.counter {
+  font-weight: bolder;
+  margin: auto;
+  display: flex;
+  align-items: center;
+}
+.counter .value-counter {
+  margin-left: 1rem;
+  font-size: 3rem;
+  color: rgb(9, 84, 150);
 }
