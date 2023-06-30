@@ -55,7 +55,7 @@ public class FrontServlet extends HttpServlet {
                 Gson gson = builder.create();
                 Object target = save(res, req);
                 // out.println(target);
-                out.println(gson.toJson(target));
+                // out.println(gson.toJson(target));
                 // out.println("No redirection :( ");
             }
         } catch (Exception e) {
@@ -123,6 +123,7 @@ public class FrontServlet extends HttpServlet {
                         view = this.getViewRequested(classMapping, method, req, res);
                         if (view != null) {
                             Object dataJson = checkIfJsonRequested(req, view);
+
                             // Check if ther is a data transformed into json
                             if (dataJson != null) {
                                 out.println(dataJson);
@@ -141,6 +142,21 @@ public class FrontServlet extends HttpServlet {
                 throw new Exception("Vous n'avez pas d'accès pour voir ce contenue");
         }
         return urlView;
+    }
+
+    public void checkRemoveSession(ModelView view, HttpServletRequest req) throws Exception {
+        HttpSession session = req.getSession();
+        Vector<String> session_to_remove = view.getRemove_session();
+        try {
+            for (String key : session_to_remove) {
+                session.removeAttribute(key);
+            }
+            if (view.getInvalidate_session()) {
+                session.invalidate();
+            }
+        } catch (Exception e) {
+        }
+
     }
 
     public Boolean checkIfJsonReturnValue(Method method, Class<?> classReference, HttpServletResponse res,
@@ -172,6 +188,7 @@ public class FrontServlet extends HttpServlet {
             }
         }
         if (view != null) {
+            checkRemoveSession(view, req);
             addSessionFromView(req, view);
             addDataToRequest(req, view);
         }

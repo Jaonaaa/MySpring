@@ -75,6 +75,7 @@ public class Emp {
     public ModelView login() {
         ModelView view = new ModelView();
         view.addSession("Profil", "admin");
+        view.addSession("Name_user", "Peter");
         view.setUrl("index.jsp");
         return view;
     }
@@ -101,6 +102,22 @@ public class Emp {
     public ModelView log_out() {
         ModelView view = new ModelView();
         view.addSession("Profil", null);
+        view.setUrl("index.jsp");
+        return view;
+    }
+
+    @Method(urlTo = "remove_Session.do")
+    public ModelView removeSession() {
+        ModelView view = new ModelView();
+        view.removeSession("Name_user");
+        view.setUrl("index.jsp");
+        return view;
+    }
+
+    @Method(urlTo = "remove_all_session.do")
+    public ModelView removeAllSession() {
+        ModelView view = new ModelView();
+        view.removeAllSession();
         view.setUrl("index.jsp");
         return view;
     }

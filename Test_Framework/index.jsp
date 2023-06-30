@@ -53,6 +53,16 @@
             <div class="text-response">Valeur de retour en Json</div>
             <div class="detail-response" data-url="return-to-json.do"></div>
           </div>
+
+          <div class="response-box">
+            <div class="text-response">Supprime tous les Sessions</div>
+            <div class="detail-response" data-url="remove_all_session.do"></div>
+          </div>
+
+          <div class="response-box">
+            <div class="text-response">Supprime une Session</div>
+            <div class="detail-response" data-url="remove_Session.do"></div>
+          </div>
         </div>
       </div>
     </div>
