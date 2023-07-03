@@ -1,5 +1,6 @@
 package models;
 
+import java.util.HashMap;
 import java.util.Vector;
 
 import Annotation.Auth;
@@ -18,6 +19,7 @@ public class Emp {
     private double salary;
     private Upload empPicture;
     private int counter = 0;
+    private HashMap sessions = new HashMap();
 
     public Emp() {
     }
@@ -126,7 +128,9 @@ public class Emp {
     @Method(urlTo = "checkSession.do")
     public ModelView sessions() {
         ModelView view = new ModelView();
-        view.addSession("SessionCheck", "Correct");
+        String profil = (String) this.getSessions().get("Profil");
+        String name = (String) this.getSessions().get("Name_user");
+        view.addSession("SessionCheck", "Correct > " + profil + " > " + name);
         view.setUrl("Session.jsp");
         return view;
     }
@@ -161,6 +165,30 @@ public class Emp {
 
     public double getSalary() {
         return salary;
+    }
+
+    public Upload getEmpPicture() {
+        return empPicture;
+    }
+
+    public void setEmpPicture(Upload empPicture) {
+        this.empPicture = empPicture;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    public HashMap getSessions() {
+        return sessions;
+    }
+
+    public void setSessions(HashMap sessions) {
+        this.sessions = sessions;
     }
 
     public void setSalary(double salary) {
