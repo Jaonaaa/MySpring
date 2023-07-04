@@ -15,7 +15,7 @@
         <init-param>
             <param-name>session_name</param-name>
             <param-value>Profil</param-value>
-            <description>Name of the session key</description>
+            <description>Name of the session for authentification</description>
         </init-param>
     </servlet>
 

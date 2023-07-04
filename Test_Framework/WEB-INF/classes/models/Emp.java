@@ -126,8 +126,9 @@ public class Emp {
 
     @UseSession
     @Method(urlTo = "checkSession.do")
-    public ModelView sessions() {
+    public ModelView sessions() throws Exception {
         ModelView view = new ModelView();
+        
         String profil = (String) this.getSessions().get("Profil");
         String name = (String) this.getSessions().get("Name_user");
         view.addSession("SessionCheck", "Correct > " + profil + " > " + name);

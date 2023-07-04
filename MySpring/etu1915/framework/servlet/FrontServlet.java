@@ -53,7 +53,7 @@ public class FrontServlet extends HttpServlet {
             } else {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
-                Object target = save(res, req);
+                Object target = save(res, req, null);
                 // out.println(target);
                 // out.println(gson.toJson(target));
                 // out.println("No redirection :( ");
@@ -79,7 +79,7 @@ public class FrontServlet extends HttpServlet {
             } else {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
-                Object target = save(res, req);
+                Object target = save(res, req, null);
                 // out.println(target);
                 out.println(gson.toJson(target));
                 // out.println("No redirection :( ");
@@ -179,8 +179,10 @@ public class FrontServlet extends HttpServlet {
         ModelView view = null;
         Class<?> returnType = method.getReturnType();
         if (returnType == Class.forName("utilities.ModelView")) {
-            Object switchClass = this.getInstance(classReference, method, req);
+            // Object switchClass = this.getInstance(classReference, method, req);
+            Object switchClass = save(res, req, method);
             // check if the method invoked has argument or not
+
             if (method.getParameterCount() == 0) {
                 view = (ModelView) method.invoke(switchClass);
             } else {
@@ -325,7 +327,7 @@ public class FrontServlet extends HttpServlet {
         return methodsList;
     }
 
-    public Object save(HttpServletResponse res, HttpServletRequest req) throws Exception {
+    public Object save(HttpServletResponse res, HttpServletRequest req, Method method) throws Exception {
         PrintWriter out = res.getWriter();
         // get the object target
         String urlSetted = Url.getUrlSetted(res, req);
@@ -335,12 +337,16 @@ public class FrontServlet extends HttpServlet {
         if (mapping == null)
             return null;
         Class<?> classMapping = Class.forName(mapping.getClassName());
-        Object repere = this.getInstance(classMapping, null, req);
+        Object repere = this.getInstance(classMapping, method, req);
         //
         Field[] fields = repere.getClass().getDeclaredFields();
         // Get all field a try to match the filed and the parameter from the client
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
+            // for sessions
+            if (fields[i].getName().equals("sessions")) {
+                continue;
+            }
             // if(fields[i].getType().getName().equals(fields))
             validAffectationField(repere, fields[i], null);
             String fieldName = fields[i].getName();
