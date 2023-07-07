@@ -25,12 +25,12 @@ if(request.getAttribute("hellos") != null)
         <div class="row-form">
           <div class="label-form">Nom :</div>
 
-          <select name="name" id="h">
+          <select name="id" id="h">
             <%
             for (int i = 0; i < list.size(); i++)
             {
              %>
-             <option> <% out.print(list.get(i)+"</br>"); %>  </option>
+             <option value="<%out.print(i);%>"> <% out.print(list.get(i)+"</br>"); %>  </option>
             <%
               } 
             %>
