@@ -312,7 +312,7 @@ Exemple :
 
   - Changer la valeur de `warFileName` par le nom du fichier.war que vous voulez pour votre projet
 
-  - Changer la valeur de `jspFilePath` par le path où se trouver vos fichier.jsp et les fichiers qui vont avec (css,js,etc...)
+  - Changer la valeur de `jspFilePath` par le path où se trouver vos fichier.jsp et les fichiers qui vont avec (css,js,...etc)
 
   - Changer la valeur de `sourceProjectPath` par le path où se trouve vos fichiers sources
 

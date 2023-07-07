@@ -52,7 +52,9 @@ if(request.getAttribute("hellos") != null)
        <% if(request.getAttribute("counter") != null)
           { %>
         <div class="row-form">
-          <div class="counter">Counter Instance appelé : <div class="value-counter"> <% out.println(request.getAttribute("counter")); %></div></div>
+          <div class="counter">Counter Instance appelé : <div class="value-counter"> <% out.println(request.getAttribute("counter"));
+            out.println(request.getAttribute("emp"));
+            %></div></div>
         </div>
         <% } %>
 

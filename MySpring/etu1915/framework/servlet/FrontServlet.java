@@ -265,6 +265,7 @@ public class FrontServlet extends HttpServlet {
             if (instance == null) {
                 Object newInstance = classTarget.getConstructor().newInstance();
                 this.checkIsSessionRequested(method, newInstance, req);
+
                 this.singletonsClass.put(newInstance.getClass().getName(), newInstance);
                 return newInstance;
             } else {
@@ -344,7 +345,7 @@ public class FrontServlet extends HttpServlet {
         for (int i = 0; i < fields.length; i++) {
             fields[i].setAccessible(true);
             // for sessions
-            if (fields[i].getName().equals("sessions")) {
+            if (fields[i].getName().equals("sessions") || fields[i].getName().equals("counter")) {
                 continue;
             }
             // if(fields[i].getType().getName().equals(fields))

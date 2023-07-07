@@ -68,6 +68,7 @@ public class Emp {
         view.addItem("hellos", params);
         this.counter = this.counter + 1;
         view.addItem("counter", this.counter);
+        view.addItem("emp", this);
 
         view.setUrl("Emp.jsp");
         return view;
@@ -128,7 +129,7 @@ public class Emp {
     @Method(urlTo = "checkSession.do")
     public ModelView sessions() throws Exception {
         ModelView view = new ModelView();
-        
+
         String profil = (String) this.getSessions().get("Profil");
         String name = (String) this.getSessions().get("Name_user");
         view.addSession("SessionCheck", "Correct > " + profil + " > " + name);
