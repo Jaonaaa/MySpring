@@ -1,6 +1,6 @@
 # Prérequies
 
-- Version JDK 1.8
+- Version JDK 21.0.2
 
 # Utilisation
 
@@ -319,3 +319,8 @@ Exemple :
   - Changer la valeur de `tempFilePath` par le path où vous voulez que le fichier temporaire se situe
 
   - Changer la valeur de `xmlConfigFile` par le path vers votre web.xml
+
+# Dépendances
+
+- Veuiller ajouter le libraire `Gson` dans le `lib` de votre projet ou bien dans celle de votre serveur
+  d'application
