@@ -30,7 +30,6 @@ public class Url {
         File[] files = file.listFiles();
         if (files != null) {
             for (int i = 0; i < files.length; i++) {
-                // out.println(files[i].getAbsolutePath());
                 String allPath = files[i].getAbsolutePath();
                 File fileChild = new File(allPath);
                 if (fileChild.isDirectory()) {
@@ -38,7 +37,9 @@ public class Url {
                 } else {
                     if (allPath.endsWith(".class")) {
                         String className = allPath.replace(pathRacine, "");
-                        classes.add(Class.forName(className.replace("\\", ".").replace(".class", "")));
+                        className = className.replace(pathRacine.replace("\\", "/"), "");
+                        classes.add(
+                                Class.forName(className.replace("\\", ".").replace("/", ".").replace(".class", "")));
                     }
                 }
             }

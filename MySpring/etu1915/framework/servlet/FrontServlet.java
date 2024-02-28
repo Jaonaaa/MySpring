@@ -35,7 +35,6 @@ public class FrontServlet extends HttpServlet {
         super.init();
         String pathToClasses = this.getInitParameter("pathClass");
         this.mappingUrls = this.getMap(pathToClasses);
-        System.out.println(this.mappingUrls);
         this.singletonsClass = new HashMap<String, Object>();
     }
 
