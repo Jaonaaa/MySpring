@@ -35,6 +35,7 @@ public class FrontServlet extends HttpServlet {
         super.init();
         String pathToClasses = this.getInitParameter("pathClass");
         this.mappingUrls = this.getMap(pathToClasses);
+        System.out.println(this.mappingUrls);
         this.singletonsClass = new HashMap<String, Object>();
     }
 
@@ -484,6 +485,7 @@ public class FrontServlet extends HttpServlet {
             String classesPath = this.getServletContext().getRealPath(pathToClasses);
             map = new Url().getGuide(classesPath);
         } catch (Exception e) {
+            System.out.println(e);
         }
         return map;
     }
