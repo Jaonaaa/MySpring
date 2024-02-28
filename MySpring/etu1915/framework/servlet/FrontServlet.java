@@ -13,6 +13,7 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
 import Annotation.Auth;
+import Annotation.CSV;
 import Annotation.Choosen;
 import Annotation.JsonData;
 import Annotation.UseSession;
@@ -54,12 +55,13 @@ public class FrontServlet extends HttpServlet {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
                 Object target = save(res, req, null);
+                // throw new Exception("URL not found");
                 // out.println(target);
                 // out.println(gson.toJson(target));
                 // out.println("No redirection :( ");
             }
         } catch (Exception e) {
-            out.println(" Exception : " + e.getMessage());
+            out.println(e.getCause() + " " + e.getMessage());
         }
     }
 
@@ -80,12 +82,13 @@ public class FrontServlet extends HttpServlet {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
                 Object target = save(res, req, null);
+                // throw new Exception("URL not found");
                 // out.println(target);
-                out.println(gson.toJson(target));
+                // out.println(gson.toJson(target));
                 // out.println("No redirection :( ");
             }
         } catch (Exception e) {
-            out.println(" Exception : " + e.getMessage());
+            out.println(e.getCause() + " " + e.getMessage());
         }
     }
 
@@ -120,6 +123,10 @@ public class FrontServlet extends HttpServlet {
                     if (checkIfJsonReturnValue(method, classMapping, res, req)) {
                         return urlView;
                     } else {
+                        if (checkIfCSVReturnValue(method, classMapping, res, req)) {
+                            return urlView;
+                        }
+
                         view = this.getViewRequested(classMapping, method, req, res);
                         if (view != null) {
                             Object dataJson = checkIfJsonRequested(req, view);
@@ -129,6 +136,7 @@ public class FrontServlet extends HttpServlet {
                                 out.println(dataJson);
                                 return urlView;
                             }
+
                             if (view.getUrl() != null)
                                 urlView = view.getUrl();
                             break;
@@ -155,6 +163,7 @@ public class FrontServlet extends HttpServlet {
                 session.invalidate();
             }
         } catch (Exception e) {
+            throw e;
         }
 
     }
@@ -163,7 +172,7 @@ public class FrontServlet extends HttpServlet {
             HttpServletRequest req) throws Exception {
         PrintWriter out = res.getWriter();
         if (method.isAnnotationPresent(JsonData.class)) {
-            Object value = this.getReturnValue(classReference, method, req);
+            Object value = this.getReturnValue(classReference, method, req, res);
             if (value != null) {
                 GsonBuilder builder = new GsonBuilder();
                 Gson gson = builder.create();
@@ -174,20 +183,67 @@ public class FrontServlet extends HttpServlet {
         return false;
     }
 
+    public Boolean checkIfCSVReturnValue(Method method, Class<?> classReference, HttpServletResponse res,
+            HttpServletRequest req) throws Exception {
+        PrintWriter out = res.getWriter();
+        // res.setContentType("text/csv");
+        if (method.isAnnotationPresent(CSV.class)) {
+            Object value = this.getReturnValue(classReference, method, req, res);
+            if (value != null) {
+
+                String csv = formatToCSV(value);
+                String[] csv_parts = csv.split("popovp-");
+                for (int i = 0; i < csv_parts.length; i++) {
+                    out.println(csv_parts[i]);
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+
+    public String formatToCSV(Object datas) throws Exception {
+        String csv = "";
+        if (datas.getClass().isInstance(new Vector<>())) {
+            Vector<?> data_casted = (Vector<?>) datas;
+            for (Object object : data_casted) {
+                Field[] fields = object.getClass().getDeclaredFields();
+                for (int i = 0; i < fields.length; i++) {
+                    fields[i].setAccessible(true);
+                    if (i == fields.length - 1) {
+                        csv += "" + fields[i].get(object);
+                    } else {
+                        csv += "" + fields[i].get(object) + ",";
+                    }
+
+                }
+                csv += "popovp-";
+            }
+        } else {
+            csv += datas;
+        }
+        return csv;
+    }
+
     public ModelView getViewRequested(Class<?> classReference, Method method, HttpServletRequest req,
             HttpServletResponse res) throws Exception {
         ModelView view = null;
         Class<?> returnType = method.getReturnType();
+
         if (returnType == Class.forName("utilities.ModelView")) {
             // Object switchClass = this.getInstance(classReference, method, req);
             Object switchClass = save(res, req, method);
             // check if the method invoked has argument or not
-
             if (method.getParameterCount() == 0) {
-                view = (ModelView) method.invoke(switchClass);
+                Object v = method.invoke(switchClass);
+                if (v != null)
+                    view = (ModelView) v;
             } else {
-                view = (ModelView) method.invoke(switchClass, getMethodParamValues(method, req));
+                Object v = method.invoke(switchClass, getMethodParamValues(method, req));
+                if (v != null)
+                    view = (ModelView) v;
             }
+
         }
         if (view != null) {
             checkRemoveSession(view, req);
@@ -197,11 +253,14 @@ public class FrontServlet extends HttpServlet {
         return view;
     }
 
-    public Object getReturnValue(Class<?> classReference, Method method, HttpServletRequest req) throws Exception {
+    public Object getReturnValue(Class<?> classReference, Method method, HttpServletRequest req,
+            HttpServletResponse res) throws Exception {
         Object returnValue = null;
         Class<?> returnType = method.getReturnType();
 
-        Object switchClass = this.getInstance(classReference, method, req);
+        // Object switchClass = this.getInstance(classReference, method, req);
+
+        Object switchClass = this.save(res, req, method);
         // check if the method invoked has argument or not
         if (method.getParameterCount() == 0) {
             returnValue = method.invoke(switchClass);

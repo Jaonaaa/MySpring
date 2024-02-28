@@ -1,7 +1,6 @@
 package etu1915.framework.servlet;
 
 import java.io.*;
-import java.net.http.HttpResponse;
 
 import jakarta.servlet.*;
 import jakarta.servlet.http.*;
@@ -27,6 +26,7 @@ public class Upload {
                 String fileName = getFileName(part);
                 part.write(uploadPath + File.separator + fileName);
                 upload = getFileData(uploadPath + File.separator + fileName, fileName);
+                upload.setPath(uploadPath + File.separator + fileName);
             }
         } catch (Exception e) {
             // for not showing the error message of
